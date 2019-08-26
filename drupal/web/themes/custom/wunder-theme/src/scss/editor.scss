@@ -1,6 +1,6 @@
-@import 'helpers/variables/svg';
+@import 'helpers/**/*.scss';
 
-@import 'base/typography';
+@import 'base/*';
 
 // Import specific components instead of all.
 //@import 'components/**/*.scss';

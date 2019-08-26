@@ -1,7 +1,7 @@
-@import 'helpers/variables/svg';
+@import 'helpers/**/*.scss';
 
-@import 'base/typography';
+@import 'base/*';
 
-@import 'layout/site/logo';
+@import 'layout/**/*.scss';
 
-@import 'components/site/logo';
+@import 'components/**/*.scss';
