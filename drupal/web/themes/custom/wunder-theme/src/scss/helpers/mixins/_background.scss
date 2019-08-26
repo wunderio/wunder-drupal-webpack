@@ -1,0 +1,4 @@
+@mixin background-image-svg($svg: $svg-chevron-down) {
+  background-image: url('data:image/svg+xml;base64,#{$svg}');
+  background-repeat: no-repeat;
+}

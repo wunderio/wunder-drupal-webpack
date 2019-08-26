@@ -1,0 +1,396 @@
+/// This variable is a sass map that overrides Neat's default grid settings.
+/// Use this to define your project's grid properties including gutters and
+/// total column count.
+///
+/// @type map
+///
+/// @group settings
+///
+/// @name Neat grid
+///
+/// @property {number (unitless)} columns [12]
+///   Default number of the total grid columns.
+///
+/// @property {number (with unit)} gutter [20px]
+///   Default grid gutter width between columns.
+///
+/// @example scss
+///   $neat-grid: (
+///     columns: 12,
+///     gutter: 20px,
+///   );
+
+$neat-grid: () !default;
+
+/// If you need multiple grids in a single project, you can do
+/// this by defining a new map stored within a variable of your choosing. This
+/// variable can then be passed directly in to any of Neat's mixins like
+/// [`grid-column(12, $my-custom-grid)`](#grid-column).
+///
+/// Custom grids are especially useful with [`grid-media`](#grid-media). By
+/// defining a `media` attribute within your custom grid, you are able to easily
+/// define gutter width and total column count as well the breakpoint at which
+/// they should activate.
+///
+/// @type map
+///
+/// @group settings
+///
+/// @name Custom grids
+///
+/// @property {number (unitless)} columns [12]
+///   Number of the total grid columns.
+///
+/// @property {number (with unit)} gutter [20px]
+///   Grid gutter width between columns.
+///
+/// @property {number (with unit) | string | null} media [null]
+///   The `@media` definition that is used by the [`grid-media`](#grid-media)
+///   mixin to determine the media properties.
+///
+/// @property {color} color [null]
+///   The color used by [`grid-visual`](#grid-visual) to create the guides.
+///
+/// @property {string} direction [ltr]
+///   The float direction used throughout the grid.
+///
+/// @example scss
+///   $my-custom-grid: (
+///     columns: 12,
+///     gutter: 20px,
+///     media: 1200px,
+///     color: rgba(#00d4ff, 0.25),
+///     direction: ltr,
+///   );
+///
+///   $other-custom-grid-for-print: (
+///     columns: 14,
+///     gutter: 1.5rem,
+///     media: print,
+///   );
+///
+
+$neat-custom-grid: () !default;
+
+/// This function recives a grid map and merges it with Neat's defauls.
+/// It then returns the value of the property that has been passed to it.
+///
+/// @argument {map} $grid
+///
+/// @argument {string} $setting
+///
+/// @return {boolean | color | list | number | string}
+///
+/// @example scss
+///   _retrieve-neat-setting($neat-grid, columns)
+///
+/// @access private
+
+@function _retrieve-neat-setting($grid, $setting) {
+  $_merged-grid: map-merge(
+      (
+        columns: 12,
+        gutter: 20px,
+        media: null,
+        color: rgba(#00d4ff, 0.25),
+        direction: left,
+      ),
+      $neat-grid
+    );
+  $_grid-settings: map-merge($_merged-grid, $grid);
+
+  @return map-get($_grid-settings, $setting);
+}
+
+/// Parse a column count like `3 of 5` and retur the total coloumn count.
+/// This is to allow a shorthand for custom grids without using a settings map.
+///
+///
+/// @argument {list} $span
+///
+/// @return {number}
+///
+/// @example scss
+///   _neat-parse-columns(3 of 5)
+///
+/// @access private
+
+@function _neat-parse-columns($span) {
+  @if length($span) == 3 {
+    $_total-columns: nth($span, 3);
+
+    @return $_total-columns;
+  }
+
+  @else if length($span) == 2 or if length($span) >= 3 {
+    @error "`$column` should contain 2 values, seperated by an `of`";
+  }
+}
+
+/// Determine the ratio of `$columns` to the total column count.
+/// If `$columns` is more than one value, they are handed to
+/// `_neat-parse-columns()` which will determine the total columns and use this
+/// value instead of `total-columns`.
+///
+/// @argument {map} $grid
+///
+/// @argument {number | list} $columns
+///
+/// @return {number}
+///
+/// @example scss
+///   _neat-column-ratio($grid, 3)
+///
+/// @access private
+
+@function _neat-column-ratio($grid, $columns) {
+  @if length($columns) > 1 {
+    @return nth($columns, 1) / _neat-parse-columns($columns);
+  }
+
+  @else if $columns {
+    @return $columns / _retrieve-neat-setting($grid, columns);
+  }
+}
+
+/// Return a calulated column width that can then be passed in to a `calc()`.
+///
+/// @argument {map} $grid
+///
+/// @argument {number} $columns
+///
+/// @return {string}
+///
+/// @example scss
+///   _neat-column-width($neat-grid, 4)
+///
+/// @access private
+@function _neat-column-width($grid, $columns) {
+  $_column-ratio: _neat-column-ratio($grid, $columns);
+  $_gutter: _retrieve-neat-setting($grid, gutter);
+
+  @if $_gutter == 0 {
+    @return unquote("#{percentage($_column-ratio)}");
+  }
+
+  @else {
+    $_gutter-affordance: $_gutter + ($_gutter * $_column-ratio);
+
+    @return unquote("#{percentage($_column-ratio)} - #{$_gutter-affordance}");
+  }
+}
+
+/// Determine if a column count has been given.
+/// If no columns have been given return the grid's total column count.
+///
+/// @argument {map} $grid
+///
+/// @argument {number (unitless) | null} $columns
+///
+/// @return {number}
+///
+/// @example scss
+///   _neat-column-default($neat-grid, 4)
+///
+/// @access private
+
+@function _neat-column-default($grid, $columns) {
+  @if $columns == null {
+    $_grid-columns: _retrieve-neat-setting($grid, columns);
+
+    @return $_grid-columns;
+  }
+
+  @else {
+    @return $columns;
+  }
+}
+
+/// Creates a grid column of requested size.
+///
+/// @group features
+///
+/// @name Grid column
+///
+/// @argument {number (unitless)} $columns [null]
+///   Specifies the number of columns an element should span based on the total
+///   columns of the grid.
+///
+///   This can also be defined in a shorthand syntaxt which also contains the
+///   total column count such as `3 of 5`.
+///
+/// @argument {map} $grid [$neat-grid]
+///   The grid to be used to generate the column.
+///   By default, the global `$neat-grid` will be used.
+///
+/// @example scss
+///   .element {
+///     @include grid-column(3);
+///   }
+///
+/// @example css
+///   .element {
+///     width: calc(25% - 25px);
+///     float: left;
+///     margin-left: 20px;
+///   }
+
+@mixin grid-column($columns: null, $grid: $neat-grid) {
+  $columns: _neat-column-default($grid, $columns);
+  $_grid-columns: _retrieve-neat-setting($grid, columns);
+  $_grid-gutter: _retrieve-neat-setting($grid, gutter);
+  $_grid-direction: _retrieve-neat-setting($grid, direction);
+
+  width: calc(#{_neat-column-width($grid, $columns)});
+  margin-#{$_grid-direction}: $_grid-gutter;
+}
+
+/// Creates a grid container.
+
+@mixin grid-container($grid-gutter: null, $grid: $neat-grid) {
+  @if $grid-gutter == null {
+    $grid-gutter: _retrieve-neat-setting($grid, gutter);
+  }
+
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -$grid-gutter;
+  margin-right: -$grid-gutter;
+}
+
+/// Creates a grid container without room for side gutter.
+
+@mixin grid-no-side-gutter-container() {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/// Push or pull a grid column by manipulating its left margin.
+///
+/// @group features
+///
+/// @name Grid push
+///
+/// @argument {number (unitless)} $push [false]
+///   The number of columns to push the column.
+///
+/// @argument {map} $grid [$neat-grid]
+///   The grid to be used to determine how far to push the column.
+///   By default, the global `$neat-grid` will be used.
+///
+/// @example scss
+///   .element {
+///     @include grid-push(3);
+///   }
+///
+/// @example css
+///   .element {
+///     margin-left: calc(25% - 25px + 40px);
+///   }
+
+@mixin grid-push($push: false, $grid: $neat-grid) {
+  $_grid-columns: _retrieve-neat-setting($grid, columns);
+  $_grid-gutter: _retrieve-neat-setting($grid, gutter);
+
+  @if $push {
+    $_gutter-affordance: $_grid-gutter * 2;
+    $_margin-value: calc(#{_neat-column-width($grid, $push)} + #{$_gutter-affordance});
+
+    margin-#{_retrieve-neat-setting($grid, direction)}: $_margin-value;
+  }
+
+  @else {
+    $_margin-value: _retrieve-neat-setting($grid, gutter);
+
+    margin-#{_retrieve-neat-setting($grid, direction)}: $_margin-value;
+  }
+}
+
+/// Return a calulated column width that can then be passed in to a `calc()`.
+///
+/// @argument {map} $grid
+///
+/// @argument {number} $columns
+///
+/// @argument {number} $gutters
+///
+/// @return {string}
+///
+/// @example scss
+///   _neat-column-width($neat-grid, 4)
+///
+/// @access private
+
+@function _neat-containerless-column-width($grid, $columns, $gutters) {
+  $_column-ratio: _neat-column-ratio($grid, $columns);
+  $_gutter: _retrieve-neat-setting($grid, gutter);
+
+  @if $_gutter == 0 {
+    @return unquote("#{percentage($_column-ratio)}");
+  }
+
+  @else {
+    $_gutter-affordance: ($_gutter * $gutters * $_column-ratio);
+    // Dirty workaround to prevent columns from dropping out of a row in IE11.
+    // Decreasing the column width by just a tenth of a pixel should be enough.
+    $_gutter-affordance: $_gutter-affordance * 1.01;
+
+    @return unquote("#{percentage($_column-ratio)} - #{$_gutter-affordance}");
+  }
+}
+
+/// Creates a grid column of requested size.
+///
+/// @group features
+///
+/// @name Grid column
+///
+/// @argument {number (unitless)} $columns [null]
+///   Specifies the number of columns an element should span based on the total
+///   columns of the grid.
+///
+///   This can also be defined in a shorthand syntaxt which also contains the
+///   total column count such as `3 of 5`.
+///
+/// @argument {number (unitless)} $total-columns [2]
+///   Specifies the count of all columns that will make up the layout. It is
+///   used to correctly calculate the gutter affordance for each column.
+///
+///   The more columns there are, the more gutters are needed. All gutter widths
+///   are equally divided upon all the columns that make up the layout.
+///
+///   A trade-off is that the total column count needs to be known beforehand and
+///   set for each column. Use a regular grid-column() where possible instead.
+///
+/// @argument {bool} $add-gutter [true]
+///   Whether to add a gutter to this column.
+///
+/// @argument {map} $grid [$neat-grid]
+///   The grid to be used to generate the column.
+///   By default, the global `$neat-grid` will be used.
+///
+/// @example scss
+///   .element {
+///     @include grid-column(3);
+///   }
+///
+/// @example css
+///   .element {
+///     width: calc(25% - 25px);
+///     float: left;
+///     margin-left: 20px;
+///   }
+
+@mixin grid-containerless-column($columns: null, $total-columns: 2, $add-gutter: true, $grid: $neat-grid) {
+  $columns: _neat-column-default($grid, $columns);
+  $_grid-columns: _retrieve-neat-setting($grid, columns);
+  $_grid-gutter: _retrieve-neat-setting($grid, gutter);
+  $_grid-direction: _retrieve-neat-setting($grid, direction);
+  $_total_gutters: $total_columns - 1;
+
+  width: calc(#{_neat-containerless-column-width($grid, $columns, $_total_gutters)});
+
+  @if $add-gutter {
+    margin-#{$_grid-direction}: $_grid-gutter;
+  }
+}

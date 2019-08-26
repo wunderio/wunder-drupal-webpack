@@ -1,0 +1,76 @@
+@mixin _button {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+  text-align: center;
+  -webkit-font-smoothing: antialiased;
+  font-family: $font-family-base;
+  font-weight: 500;
+  appearance: none;
+  text-decoration: none;
+  user-select: none;
+  border: 1px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
+  color: white;
+  background-color: $color-primary;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+@mixin button {
+  @include _button;
+
+  height: $height-inputs;
+  line-height: 1.5;
+  padding: 0 $spacing-small-2;
+  font-size: $font-size-base;
+}
+
+@mixin button--inverted {
+  @include button;
+
+  border: 1px solid $color-primary;
+  color: $color-primary;
+  background: white;
+
+  &:hover,
+  &:focus {
+    background: $color-gray-100;
+  }
+}
+
+@mixin button--hollow {
+  @include _button;
+
+  padding: $spacing-small-2;
+  border: 1px solid $color-gray-500;
+  border-radius: $border-radius-base;
+  font-size: $font-size-small-2;
+  color: $color-gray-700;
+  background: white;
+
+  &:hover,
+  &:focus {
+    background: $color-gray-100;
+  }
+}
+
+@mixin button--pill {
+  @include _button;
+
+  padding: $spacing-small-3 $spacing-small-2;
+  font-size: $font-size-small-4;
+  border-radius: 3rem;
+  color: $color-gray-900;
+  background: $color-gray-150;
+
+  &:hover,
+  &:focus {
+    color: $color-primary;
+  }
+}

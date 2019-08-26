@@ -1,0 +1,125 @@
+html {
+  font-size: $font-size-html;
+}
+
+body {
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  font-weight: 400;
+  line-height: $line-height-base;
+  letter-spacing: $letter-spacing-base;;
+  color: $color-base;
+
+  @include below($xsmall) {
+    letter-spacing: $letter-spacing-condensed-2;
+  }
+}
+
+// Headers
+%h1,
+%h2,
+%h3,
+%h4,
+%h5,
+%h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: $spacing-base 0;
+  line-height: $line-height-heading;
+  font-family: $font-family-headings;
+  font-size: $font-size-base;
+  font-weight: 700;
+}
+
+// Header font sizes
+%h1,
+h1 {
+  margin: 0 0 $spacing-large-3;
+  font-size: $font-size-h1;
+  font-weight: 300;
+  letter-spacing: $letter-spacing-condensed-5;
+  color: $color-primary;
+}
+
+%h2,
+h2 {
+  font-size: $font-size-h2;
+  letter-spacing: $letter-spacing-condensed-4;
+}
+
+%h3,
+h3 {
+  font-size: $font-size-h3;
+  letter-spacing: $letter-spacing-condensed-2;
+}
+
+%h4,
+h4 {
+  font-size: $font-size-h4;
+  letter-spacing: $letter-spacing-condensed-1;
+}
+
+%h5,
+h5,
+%h6,
+h6 {
+  line-height: $line-height-base;
+  letter-spacing: $letter-spacing-condensed-1;
+}
+
+%h5,
+h5 {
+  margin-bottom: $spacing-base*-1;
+}
+
+%h6,
+h6 {
+  font-weight: 400;
+}
+
+p {
+  margin: $spacing-base 0;
+}
+
+%blockquote,
+blockquote {
+  margin: $spacing-base 0;
+  padding: $spacing-base;
+  font-size: $font-size-small-1;
+  border-left: 5px solid $color-gray-200;
+}
+
+pre {
+  margin-bottom: $spacing-base;
+  padding: ($spacing-base - 1);
+}
+
+em {
+  font-style: italic;
+}
+
+strong,
+b {
+  font-weight: bold;
+}
+
+%small,
+small {
+  display: inline-block;
+  font-size: $font-size-small-3;
+}
+
+%mark,
+mark {
+  background: transparent;
+  color: #eb1b2d;
+  padding: 0;
+}
+
+a {
+  color: $color-action;
+}

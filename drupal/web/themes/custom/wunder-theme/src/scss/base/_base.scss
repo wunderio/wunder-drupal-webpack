@@ -1,0 +1,33 @@
+html {
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  background-color: $background-color-base;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+video {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+
+audio {
+  width: 100%;
+  max-width: 100%;
+}

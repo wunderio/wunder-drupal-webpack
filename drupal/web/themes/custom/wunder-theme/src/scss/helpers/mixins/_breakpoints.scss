@@ -1,0 +1,45 @@
+// Target viewports in a range from given breakpoint $smaller
+// to breakpoint $larger.
+@mixin between($smaller, $larger) {
+  @media (min-width: $smaller) and (max-width: #{$larger - 1px}) {
+    @content;
+  }
+}
+
+// Target viewports from 0 to given breakpoint $breakpoint.
+// The inverse behavior of mobile first.
+@mixin below($breakpoint) {
+  @media (max-width: #{$breakpoint - 1px}) {
+    @content;
+  }
+}
+
+// Target viewports from a given breakpoint to infinity.
+@mixin above($breakpoint) {
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+// Target vertical viewports in a range from given breakpoint $smaller
+// to breakpoint $larger.
+@mixin between-height($smaller, $larger) {
+  @media (min-height: $smaller) and (max-height: #{$larger - 1px}) {
+    @content;
+  }
+}
+
+// Target vertical viewports from 0 to given breakpoint $breakpoint.
+// The inverse behavior of mobile first.
+@mixin below-height($breakpoint) {
+  @media (max-height: #{$breakpoint - 1px}) {
+    @content;
+  }
+}
+
+// Target vertical viewports from a given breakpoint to infinity.
+@mixin above-height($breakpoint) {
+  @media (min-height: $breakpoint) {
+    @content;
+  }
+}

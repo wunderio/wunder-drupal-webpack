@@ -1,0 +1,77 @@
+// Line height
+$line-height-base: 1.5;
+$line-height-heading: 1.2;
+
+$font-family-base: Roboto, roboto, Helvetica, Arial, sans-serif;
+$font-family-condensed: 'Roboto Condensed', roboto_condensed, Helvetica, Arial, sans-serif;
+$font-family-headings: $font-family-base;
+$font-family-icons: icon-font;
+
+
+// Font Sizes
+$font-size-html: 10px;
+$font-size-large-5: 4rem;
+$font-size-large-4: 3rem;
+$font-size-large-3: 2.2rem;
+$font-size-large-2: 2rem;
+$font-size-large-1: 1.8rem;
+$font-size-base: 1.7rem;
+$font-size-small-1: 1.6rem;
+$font-size-small-2: 1.5rem;
+$font-size-small-3: 1.4rem;
+$font-size-small-4: 1.3rem;
+$font-size-small-5: 1.2rem;
+$font-size-small-6: 1rem;
+
+$font-size-h1: 3.4rem;
+$font-size-h2: 2.8rem;
+$font-size-h3: 2.2rem;
+$font-size-h4: 1.8rem;
+
+// Font Colors
+$color-base: $color-gray-880;
+$color-action: $color-red-1;
+$color-primary: $color-red-1;
+
+// Background Colors
+$background-color-base: white;
+$box-shadow-base: 0 3px 20px 0 rgba(0, 0, 0, 0.17);
+
+// Borders
+$border-radius-base: 2px;
+$border-color-base: $color-gray-400;
+$border-base: 1px solid $border-color-base;
+
+// Animations
+$duration-base: 150ms;
+$duration-medium: 350ms;
+$timing-base: ease;
+$transition-base: $duration-base $timing-base;
+
+$letter-spacing-base: 0.3px;
+$letter-spacing-expanded-1: 0.6px;
+$letter-spacing-condensed-1: 0.15px;
+$letter-spacing-condensed-2: 0;
+$letter-spacing-condensed-3: -0.15px;
+$letter-spacing-condensed-4: -0.5px;
+$letter-spacing-condensed-5: -1.5px;
+
+// Spacing
+$spacing-base:     $font-size-base * $line-height-base;
+$spacing-large-10: $spacing-base * 5;
+$spacing-large-9:  $spacing-base * 4.5;
+$spacing-large-8:  $spacing-base * 4;
+$spacing-large-7:  $spacing-base * 3.5;
+$spacing-large-6:  $spacing-base * 3;
+$spacing-large-5:  $spacing-base * 2.5;
+$spacing-large-4:  $spacing-base * 2;
+$spacing-large-3:  $spacing-base * 1.75;
+$spacing-large-2:  $spacing-base * 1.5;
+$spacing-large-1:  $spacing-base * 1.25;
+$spacing-small-1:  $spacing-base * 0.75;
+$spacing-small-2:  $spacing-base * 0.5;
+$spacing-small-3:  $spacing-base * 0.25;
+$spacing-small-4:  $spacing-base * 0.125;
+$spacing-small-5:  $spacing-base * 0.065;
+
+$container-padding: $spacing-base;

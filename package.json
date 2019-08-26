@@ -1,0 +1,46 @@
+{
+  "name": "wunder-drupal8-webpack",
+  "description": "",
+  "version": "1.0.0",
+  "author": "Wunder",
+  "license": "ISC",
+  "scripts": {
+    "start": "npm-run-all -p watch sync",
+    "build": "webpack --mode production",
+    "watch": "webpack --mode development --watch",
+    "sync": "node browser-sync.js"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "> 1%",
+    "IE 11"
+  ],
+  "proxy": "http://wunder-drupal8-webpack.lndo.site/",
+  "paths": {
+    "appThemeRoot": "drupal/web/themes/custom/wunder-theme"
+  },
+  "dependencies": {
+    "autoprefixer": "^9.1.3",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "clean-webpack-plugin": "^1.0.1",
+    "css-loader": "^1.0.0",
+    "file-loader": "^2.0.0",
+    "mini-css-extract-plugin": "^0.4.1",
+    "node-sass": "^4.9.3",
+    "node-sass-glob-importer": "^5.2.0",
+    "object-fit-images": "^3.2.4",
+    "postcss-loader": "^3.0.0",
+    "resolve-url-loader": "^3.0.0",
+    "sass-loader": "^7.1.0",
+    "tabbable": "^3.1.1",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.26.3",
+    "npm-run-all": "^4.1.5"
+  }
+}

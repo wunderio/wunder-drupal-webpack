@@ -1,0 +1,46 @@
+// Sets the max-width property of the element that includes `container()`.
+$max-width-container: 1260px;
+$max-width-text: 800px;
+$max-width-sidebar: 360px;
+$max-width-sidebar-medium: 300px;
+$max-width-actions: 140px;
+$max-width-actions-medium: 100px;
+$gutter-sidebar: 120px;
+$gutter-sidebar-medium: 70px;
+$gutter-actions: 20px;
+
+$grid-columns: 12;
+$grid-gutter: $max-width-container / 48;
+
+//------------------------------------------------------------------
+// [Neat settings]
+//
+// Override the default neat grid settings
+//-------------------------------------------------------------------
+
+/// This variable is a sass map that overrides Neat's default grid settings.
+/// Use this to define your project's grid properties incluting gutters and
+/// total column count.
+///
+/// @type map
+///
+/// @group settings
+///
+/// @name Neat grid
+///
+/// @property {number (unitless)} columns [12]
+///   Default number of the total grid columns.
+///
+/// @property {number (with unit)} gutter [20px]
+///   Default grid gutter width between columns.
+///
+/// @example scss
+///   $neat-grid: (
+///     columns: 12,
+///     gutter: 20px,
+///   );
+
+$neat-grid: (
+  columns: $grid-columns,
+  gutter: $grid-gutter,
+);
