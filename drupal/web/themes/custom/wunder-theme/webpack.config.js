@@ -1,6 +1,6 @@
 const path = require('path');
 const globImporter = require('node-sass-glob-importer');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
@@ -62,9 +62,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new CleanWebpackPlugin(['dist/assets'], {
-      root: __dirname
-    }),
+    new CleanWebpackPlugin(),
     new MiniCssExtractPlugin()
   ]
 };
