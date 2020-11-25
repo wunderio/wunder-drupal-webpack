@@ -17,7 +17,7 @@
   ],
   "proxy": "http://wunder-drupal8-webpack.lndo.site/",
   "paths": {
-    "appThemeRoot": "drupal/web/themes/custom/wunder-theme"
+    "appThemeRoot": "web/themes/custom/wunder-theme"
   },
   "dependencies": {
     "autoprefixer": "^9.1.3",

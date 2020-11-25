@@ -1,10 +1,10 @@
 # Generic ones
 .DS_Store
 .vagrant
-drupal/current
-drupal/builds
-drupal/.make_cache
-drupal/drupal.sqlite
+web/current
+web/builds
+web/.make_cache
+web/drupal.sqlite
 .idea
 ansible
 local.*
@@ -22,7 +22,7 @@ secrets
 .virtualenv
 
 # Ignore database dumps
-drupal/db
+web/db
 
 # Ignore node modules
 node_modules
