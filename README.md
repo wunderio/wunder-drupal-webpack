@@ -12,7 +12,7 @@ npm install
 - Start watching for files and start up BrowserSync:
 
 ```
-npm run start
+npm run develop
 ```
 
 

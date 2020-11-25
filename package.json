@@ -1,11 +1,11 @@
 {
   "name": "wunder-drupal-webpack",
-  "description": "A simple starter theme for Drupal 8 & 9 projects based on Classy",
+  "description": "A simple starter theme for Drupal 8/9 projects",
   "version": "1.0.0",
   "author": "Wunder",
   "license": "ISC",
   "scripts": {
-    "start": "npm-run-all -p watch sync",
+    "develop": "npm-run-all -p watch sync",
     "build": "webpack --mode production",
     "watch": "webpack --mode development --watch",
     "sync": "node browser-sync.js"
