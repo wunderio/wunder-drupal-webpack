@@ -4,7 +4,7 @@ A simple Drupal starter theme with Webpack setup using `npm` and BrowserSync.
 
 ### Getting started
 
-- Navigate to the root directory and install node dependencies:
+- Navigate to the project root directory and install node dependencies:
 ```
 npm install
 ```
@@ -21,11 +21,8 @@ npm run develop
 In `package.json`:
 
   - Set `proxy` to the local address of your site
+  - Set path to theme `path.appThemeRoot`
   
-**When your theme path changes**
-
-  - Set `path.appThemeRoot` in `package.json`
-  - Adjust the root Webpack configuration file `webpack.config.js`
   
 **Having different settings per theme/module**
 
