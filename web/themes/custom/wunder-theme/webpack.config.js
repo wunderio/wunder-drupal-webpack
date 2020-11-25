@@ -1,6 +1,6 @@
 const path = require('path');
 const globImporter = require('node-sass-glob-importer');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
@@ -10,6 +10,7 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, '/dist'),
+    publicPath: '',
     filename: '[name].bundle.js'
   },
   // The default devtool is `eval` which throws errors in IE.
@@ -42,19 +43,21 @@ module.exports = {
           },
           {
             loader: 'css-loader'
-          }, 
+          },
           {
             loader: 'postcss-loader'
           },
           {
+            // Rewrites relative paths in url() statements based on the original source file.
             loader: 'resolve-url-loader',
           },
           {
             loader: 'sass-loader',
             options : {
               sourceMap: true,
-              sourceMapContents: false,
-              importer: globImporter()
+              sassOptions: {
+                importer: globImporter(),
+              }
             }
           }
         ]
@@ -62,9 +65,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new CleanWebpackPlugin(['dist/assets'], {
-      root: __dirname
-    }),
-    new MiniCssExtractPlugin()
+    new CleanWebpackPlugin(),
+    new MiniCssExtractPlugin(),
   ]
 };
