@@ -1,6 +1,10 @@
 .site-logo {
   padding: 0 $spacing-small-2;
 
+  a {
+    display: block;
+  }
+
   @include above($small) {
     padding: 0 $container-padding;
   }
