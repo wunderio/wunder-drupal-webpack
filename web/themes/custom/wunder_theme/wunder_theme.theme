@@ -10,254 +10,53 @@ use Drupal\Core\Url;
 use Drupal\system\Entity\Menu;
 
 /**
- * Implements hook_theme_suggestions_HOOK_alter().
- */
-function hus_emulsify_theme_suggestions_page_alter(array &$suggestions, array $variables) {
-  $route_name = \Drupal::routeMatch()->getRouteName();
-
-  if (strpos($route_name, "service_channel.route_") !== FALSE) {
-    $suggestions[] = 'page__search';
-  }
-}
-
-/**
  * Implements template_preprocess_page().
  */
-function hus_emulsify_preprocess_page(array &$variables) {
-  $is_error_page = FALSE;
-  if ($exception = \Drupal::request()->attributes->get('exception')) {
-    $status_code = $exception->getStatusCode();
-    $is_error_page = preg_match('/^[45]/', $status_code);
-  }
-  $is_narrow_page =
-    isset($variables['node']) &&
-    in_array($variables['node']->bundle(), [
-      'page',
-      'news',
-      'person',
-      'hospital',
-      'service',
-      'service_channel',
-    ]);
-  // Modify layouts if page displays node of particular bundle or is an
-  // exception page.
-  if ($is_error_page || $is_narrow_page) {
-    $variables['page__modifiers'][] = 'narrow';
-  }
-
-  // Check if view `search_service_channels` of current page is in menu
-  // below `hospital`, pass `hospital` menuLinkContent pluginId
-  // as variable to render `menu_block`.
-  $route_name = \Drupal::routeMatch()->getRouteName();
-  if (strpos($route_name, "service_channel.route_") !== FALSE) {
-    $route_parameters = \Drupal::routeMatch()->getRawParameters();
-    $menu_parent = _hus_emulsify_get_menu_parent($route_name, $route_parameters->all());
-    if ($menu_parent && $menu_parent['type'] == 'hospital') {
-      $variables['parent_menu_item_hospital'] = $menu_parent['id'];
-      $variables['parent_menu_item_hospital_title'] = $menu_parent['title'];
-    }
-  }
+function wunder_theme_preprocess_page(array &$variables) {
 
   // Provide language specific front page link.
   $variables['front_path'] = Url::fromRoute('<front>')->toString();
 }
 
-/**
- * Implements template_preprocess_menu__main().
- */
-function hus_emulsify_preprocess_menu__main(array &$variables) {
-  // Get search view page url and add as theme variable.
-  $search_url = Url::fromRoute('view.search_global_search.search_global_all');
-  $variables['search_url'] = $search_url;
-
-  $menu = Menu::load('main');
-  $variables['menu_title'] = $menu->get('label');
-}
 
 /**
  * Implements template_preprocess_node().
  */
-function hus_emulsify_preprocess_node(array &$variables) {
+function wunder_theme_preprocess_node(array &$variables) {
   $node = $variables['node'];
   $bundle = $node->bundle();
 
-  $language = \Drupal::languageManager()->getCurrentLanguage();
-  $variables['language'] = $language;
-
-  // Remove article role. Added in template if it makes sense semantically.
-  unset($variables['attributes']['role']);
-
-  // Check if person email should use Twig extension provided by Obfuscate Email
-  // module.
-  if ($bundle == 'person' && $node->get('field_email')->first()) {
-    $mail = $node->get('field_email')->first()->getValue();
-    $moduleHandler = \Drupal::service('module_handler');
-
-    if (!empty($mail) && $moduleHandler->moduleExists('obfuscate_email')) {
-      $variables['obfuscate'] = TRUE;
-    }
-  }
-
-  // Check if `page` or `service_channel` is in menu
-  // below `hospital`, pass `hospital` menuLinkContent pluginId
-  // as variable to render `menu_block`.
-  if ($variables['view_mode'] == 'full' && ($bundle == 'page' || $bundle == 'service_channel')) {
-    $menu_parent = _hus_emulsify_get_menu_parent('entity.node.canonical', ['node' => $node->id()]);
-    if ($menu_parent && $menu_parent['type'] == 'hospital') {
-      $variables['parent_menu_item_hospital'] = $menu_parent['id'];
-    }
-    elseif ($menu_parent) {
-      $variables['parent_menu_item_any'] = $menu_parent['id'];
-    }
-  }
-
-  // Check if `hospital` has menu item with children
-  // that user has access to and pass `hospital` menuLinkContent pluginId
-  // as variable to render `menu_block`.
-  if ($bundle == 'hospital') {
-    $menu_tree = \Drupal::menuTree();
-    $menu_name = 'main';
-
-    $parameters = $menu_tree->getCurrentRouteMenuTreeParameters($menu_name);
-    $currentLinkId = reset($parameters->activeTrail);
-
-    if ($currentLinkId) {
-      $parameters->setRoot($currentLinkId);
-      $trees = $menu_tree->load($menu_name, $parameters);
-
-      $manipulators = [
-        ['callable' => 'menu.default_tree_manipulators:checkAccess'],
-      ];
-
-      $trees = $menu_tree->transform($trees, $manipulators);
-      $tree = array_pop($trees);
-
-      $variables['menu_item_has_children'] = $tree->hasChildren;
-      $variables['menu_item'] = $currentLinkId;
-    }
-  }
 }
 
-/**
- * Implements template_preprocess_node__NODE_TYPE().
- */
-function hus_emulsify_preprocess_node__announcement(array &$variables) {
-  $node = $variables['node'];
-  if (
-    $node->hasField('field_announcement_type') &&
-    !$node->get('field_announcement_type')->isEmpty()
-  ) {
-    $announcement_type = $node->get('field_announcement_type')->getValue();
-    $variables['critical'] = $announcement_type[0]['value'] === 'critical';
-  }
-}
-
-/**
- * Helper function to find menu parent item (hospital) link plugin id.
- */
-function _hus_emulsify_get_menu_parent($route_name, $route_parameters) {
-  /** @var \Drupal\Core\Menu\MenuLinkManagerInterface $menu_link_manager */
-  $menu_link_manager = \Drupal::service('plugin.manager.menu.link');
-  $links = $menu_link_manager->loadLinksByRoute($route_name, $route_parameters);
-
-  /** @var \Drupal\Core\Menu\MenuLinkInterface $link */
-  $link = array_pop($links);
-
-  /** @var \Drupal\Core\Menu\MenuLinkInterface $parent */
-  if ($link && $link->getParent() && $parent = $menu_link_manager->createInstance($link->getParent())) {
-    $route = $parent->getUrlObject()->getRouteParameters();
-    if (isset($route['node']) && $parent_node = \Drupal::entityTypeManager()->getStorage('node')->load($route['node'])) {
-      $links = $menu_link_manager->loadLinksByRoute('entity.node.canonical', ['node' => $parent_node->id()]);
-
-      $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
-      $translated_parent_node = $parent_node->getTranslation($language);
-
-      /** @var \Drupal\Core\Menu\MenuLinkInterface $link */
-      $link = array_pop($links);
-      return [
-        'title' => $translated_parent_node->getTitle(),
-        'type' => $parent_node->bundle(),
-        'id' => $link->getPluginId(),
-      ];
-    }
-  }
-  return FALSE;
-}
 
 /**
  * Implements template_preprocess_paragraph().
  */
-function hus_emulsify_preprocess_paragraph(array &$variables) {
+function wunder_theme_preprocess_paragraph(array &$variables) {
   $paragraph = $variables['paragraph'];
-
   $parent = $paragraph->getParentEntity();
-  if ($parent) {
-    if ($parent->bundle() === 'accordion') {
 
-      // For `accordion item` we need to set lower heading level (default is 2)
-      // if `accordion` has heading.
-      if (
-        $parent->get('field_title') &&
-        !$parent->get('field_title')->isEmpty()
-      ) {
-        $variables['dynamic_heading_level'] = 3;
-      }
-
-      // UUID is used for accordion item ID.
-      $variables['uuid'] = $paragraph->uuid();
-    }
-
-    if ($parent->bundle() === 'contact_information') {
-      // Set heading level based on whether parent has a title set
-      // (default is 2).
-      if (
-        $parent->get('field_title') &&
-        !$parent->get('field_title')->isEmpty()
-      ) {
-        $variables['heading_level'] = 3;
-      }
-    }
-  }
+//  if ($parent && $parent->bundle() === 'accordion') {
+//
+//    // Set lower heading level (default is 2) if `accordion` has heading.
+//    if (
+//      $parent->get('field_title') &&
+//      !$parent->get('field_title')->isEmpty()
+//    ) {
+//      $variables['heading_level'] = 3;
+//    }
+//  }
 }
 
-/**
- * Implements hook_preprocess_form_element().
- */
-function hus_emulsify_preprocess_form_element(&$variables) {
-  // Radio and checkbox template includes the label so don't render it.
-  if (in_array($variables['type'], ['radio', 'checkbox'])) {
-    $variables['label_display'] = 'hidden';
-  }
-}
-
-/**
- * Implements hook_preprocess_block().
- */
-function hus_emulsify_preprocess_block(&$variables) {
-  if ($variables['elements']['#plugin_id'] === 'language_block:language_interface') {
-    // Add current language variable to the language block wrapper.
-    $variables['language_current'] = \Drupal::languageManager()->getCurrentLanguage()->getName();
-
-    // Change role to "region" as languages aren't part of navigation.
-    $variables['attributes']['role'] = 'region';
-  }
-}
-
-/**
- * Implements hook_preprocess_block__BLOCK().
- */
-function hus_emulsify_preprocess_links__language_block(&$variables) {
-  _hus_emulsify_add_language_links($variables);
-}
 
 /**
  * Implements hook_preprocess_media().
  */
-function hus_emulsify_preprocess_media(&$variables) {
+function wunder_theme_preprocess_media(&$variables) {
   $media = $variables['media'];
 
-  if (isset($media->field_media_document)) {
-    $file = $media->field_media_document->entity;
+  if ($media->get('field_media_document')) {
+    $file = $media->get('field_media_document')->entity;
 
     // Getting all file entity details.
     $url = $file->createFileUrl(FALSE);
@@ -267,57 +66,16 @@ function hus_emulsify_preprocess_media(&$variables) {
     $options['attributes']['type'] = $mime_type . '; length=' . $file->getSize();
     $options['attributes']['title'] = $file->getFilename();
 
-    $variables["file_url"] = $url;
-    $variables["file_size"] = format_size($file->getSize());
+    $variables['file_url'] = $url;
+    $variables['file_size'] = format_size($file->getSize());
     $variables['link'] = Link::fromTextAndUrl($link_text, Url::fromUri($url, $options))->toRenderable();
   }
 }
 
 /**
- * Helper for adding language links in an easy to theme format.
- */
-function _hus_emulsify_add_language_links(&$variables) {
-  $current_language = \Drupal::languageManager()->getCurrentLanguage();
-
-  $links = [];
-  foreach ($variables['links'] as $langcode => $link) {
-    if (!empty($link['link'])) {
-      $links[$langcode]['title'] = $link['text'];
-      $links[$langcode]['url'] = _hus_emulsify_get_link_url($link['link']['#url'], $link['link']['#options']);
-
-      if ($current_language->getId() === $langcode) {
-        $links[$langcode]['attributes'] = ['aria-current' => 'true'];
-      }
-    }
-    else {
-      $links[$langcode]['title'] = $link['text'];
-    }
-  }
-
-  $variables['language_links'] = $links;
-  $variables['language_current'] = $current_language->getName();
-}
-
-/**
- * Get link url with set language.
- *
- * @param \Drupal\Core\Url $url
- *   The URL object used for the link.
- * @param array $options
- *   The URL options used for the link.
- *
- * @return string
- *   The URL for the link.
- */
-function _hus_emulsify_get_link_url(Url $url, array $options) {
-  $url->setOptions($options);
-  return $url->toString();
-}
-
-/**
  * Implements hook_theme_suggestions_HOOK_alter().
  */
-function hus_emulsify_theme_suggestions_block_alter(array &$suggestions, array $variables) {
+function wunder_theme_theme_suggestions_block_alter(array &$suggestions, array $variables) {
   $element = $variables['elements'];
 
   if (isset($element['content']['#block_content'])) {
@@ -337,7 +95,7 @@ function hus_emulsify_theme_suggestions_block_alter(array &$suggestions, array $
 /**
  * Implements hook_theme_suggestions_HOOK_alter().
  */
-function hus_emulsify_theme_suggestions_taxonomy_term_alter(array &$suggestions, array $variables) {
+function wunder_theme_theme_suggestions_taxonomy_term_alter(array &$suggestions, array $variables) {
   $element = $variables['elements'];
   $view_mode = $element['#view_mode'];
 
@@ -349,7 +107,7 @@ function hus_emulsify_theme_suggestions_taxonomy_term_alter(array &$suggestions,
 /**
  * Implements hook_theme_suggestions_HOOK_alter().
  */
-function hus_emulsify_theme_suggestions_field_alter(array &$suggestions, array $variables) {
+function wunder_theme_theme_suggestions_field_alter(array &$suggestions, array $variables) {
   $suggestions = [];
   $element = $variables['element'];
 
@@ -370,43 +128,6 @@ function hus_emulsify_theme_suggestions_field_alter(array &$suggestions, array $
 /**
  * Implements hook_theme_suggestions_HOOK_alter().
  */
-function hus_emulsify_theme_suggestions_views_view_unformatted_alter(array &$suggestions, array $variables) {
+function wunder_theme_theme_suggestions_views_view_unformatted_alter(array &$suggestions, array $variables) {
   $suggestions[] = 'views_view_unformatted__' . $variables['view']->id();
-}
-
-/**
- * Implements hook_theme_suggestions_HOOK_alter().
- */
-function hus_emulsify_theme_suggestions_main_contact_alter(array &$suggestions, array $variables) {
-  $suggestions = [];
-  $bundle = $variables['node']->bundle();
-  $view_mode = $variables['view_mode'];
-
-  $suggestions[] = 'main_contact__' . $bundle;
-  $suggestions[] = 'main_contact__' . $view_mode;
-  $suggestions[] = 'main_contact__' . $bundle . '__' . $view_mode;
-
-  return $suggestions;
-}
-
-/**
- * Helper for loading the emergency menu link.
- */
-function _hus_emulsify_get_emergency_menu_link() {
-  // Load emergency menu and add first item's data as a simple array variable.
-  $menu_tree = \Drupal::menuTree();
-  $menu_name = 'emergency';
-
-  $parameters = $menu_tree->getCurrentRouteMenuTreeParameters($menu_name);
-  $currentLinkId = reset($parameters->activeTrail);
-  $parameters->setRoot($currentLinkId);
-  $trees = $menu_tree->load($menu_name, $parameters);
-
-  $manipulators = [
-    ['callable' => 'menu.default_tree_manipulators:checkAccess'],
-  ];
-
-  $tree = $menu_tree->transform($trees, $manipulators);
-
-  return $tree ? array_shift($tree)->link : FALSE;
 }
