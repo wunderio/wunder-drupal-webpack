@@ -17,7 +17,7 @@
   ],
   "proxy": "http://wunder-drupal-webpack.lndo.site/",
   "paths": {
-    "appThemeRoot": "web/themes/custom/wunder-theme"
+    "appThemeRoot": "web/themes/custom/wunder_theme"
   },
   "dependencies": {
     "object-fit-images": "^3.2.4"
