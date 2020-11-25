@@ -1,6 +1,6 @@
 {
-  "name": "wunder-drupal8-webpack",
-  "description": "",
+  "name": "wunder-drupal-webpack",
+  "description": "A simple starter theme for Drupal 8 & 9 projects based on Classy",
   "version": "1.0.0",
   "author": "Wunder",
   "license": "ISC",
@@ -15,7 +15,7 @@
     "> 1%",
     "IE 11"
   ],
-  "proxy": "http://wunder-drupal8-webpack.lndo.site/",
+  "proxy": "http://wunder-drupal-webpack.lndo.site/",
   "paths": {
     "appThemeRoot": "web/themes/custom/wunder-theme"
   },
@@ -35,12 +35,11 @@
     "postcss-loader": "^3.0.0",
     "resolve-url-loader": "^3.0.0",
     "sass-loader": "^7.1.0",
-    "tabbable": "^3.1.1",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0"
   },
   "devDependencies": {
-    "browser-sync": "^2.26.3",
+    "browser-sync": "^2.26.13",
     "npm-run-all": "^4.1.5"
   }
 }

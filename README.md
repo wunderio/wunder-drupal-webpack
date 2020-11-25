@@ -1,6 +1,6 @@
-# Drupal 8 + Webpack starter pack
+# Drupal + Webpack starter theme
 
-Webpack setup using `npm` and BrowserSync.
+A simple Drupal starter theme with Webpack setup using `npm` and BrowserSync.
 
 ### Getting started
 
