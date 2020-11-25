@@ -1,0 +1,13 @@
+global:
+  css:
+    theme:
+      dist/main.css: {}
+  js:
+    dist/main.bundle.js: { minified: true }
+  dependencies:
+    - core/drupal
+
+#typekit:
+#  css:
+#    base:
+#      https://use.typekit.net/xyz.css: { type: external }
